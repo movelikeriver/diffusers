@@ -786,7 +786,7 @@ def main():
 
         train_loss = 0.0
         for step, batch in enumerate(train_dataloader):
-            logger.info(f"step = {step}: start")
+            # logger.info(f"step = {step}: start")
 
             # Skip steps until we reach the resumed step
             if args.resume_from_checkpoint and epoch == first_epoch and step < resume_step:
@@ -829,7 +829,7 @@ def main():
                     raise ValueError(f"Unknown prediction type {noise_scheduler.config.prediction_type}")
 
                 # Predict the noise residual and compute loss
-                logger.info(f"step = {step}: Predict the noise residual and compute loss")
+                # logger.info(f"step = {step}: Predict the noise residual and compute loss")
                 model_pred = unet(noisy_latents, timesteps, encoder_hidden_states).sample
 
                 if args.snr_gamma is None:
@@ -849,23 +849,23 @@ def main():
                     loss = loss.mean(dim=list(range(1, len(loss.shape)))) * mse_loss_weights
                     loss = loss.mean()
 
-                logger.info(f"step = {step}: after accelerator loss={loss:.3f} ==")
+                # logger.info(f"step = {step}: after accelerator loss={loss:.3f} ==")
 
                 # Gather the losses across all processes for logging (if we use distributed training).
                 avg_loss = accelerator.gather(loss.repeat(args.train_batch_size)).mean()
                 train_loss += avg_loss.item() / args.gradient_accumulation_steps
 
                 # Backpropagate
-                logger.info(f"step = {step}: Backpropagate with {loss:.3f}")
+                # logger.info(f"step = {step}: Backpropagate with {loss:.3f}")
                 accelerator.backward(loss)
                 if accelerator.sync_gradients:
                     accelerator.clip_grad_norm_(unet.parameters(), args.max_grad_norm)
                 optimizer.step()
-                logger.info(f"step = {step}: optimizer.step() done")
+                # logger.info(f"step = {step}: optimizer.step() done")
                 lr_scheduler.step()
-                logger.info(f"step = {step}: lr_scheduler done")
+                # logger.info(f"step = {step}: lr_scheduler done")
                 optimizer.zero_grad()
-                logger.info(f"step = {step}: optimizer.zero_grad() done")
+                # logger.info(f"step = {step}: optimizer.zero_grad() done")
 
             # Checks if the accelerator has performed an optimization step behind the scenes
             if accelerator.sync_gradients:
@@ -885,7 +885,7 @@ def main():
             logs = {"step_loss": loss.detach().item(), "lr": lr_scheduler.get_last_lr()[0]}
             progress_bar.set_postfix(**logs)
 
-            logger.info(f"step_loss: {loss.detach().item()}, lr: {lr_scheduler.get_last_lr()[0]}")
+            # logger.info(f"step_loss: {loss.detach().item()}, lr: {lr_scheduler.get_last_lr()[0]}")
 
             if global_step >= args.max_train_steps:
                 break
