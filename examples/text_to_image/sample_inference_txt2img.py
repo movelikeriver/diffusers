@@ -17,8 +17,26 @@ conda install -c conda-forge ftfy==6.1.1
 pip install invisible-watermark
 
 
+if with pip only,
+python3 -m venv difu
+source difu/bin/activate
+pip3 install --upgrade pip==23.1.2
+pip3 install -e ".[torch]" --target=/usr/local/lib/python3.7/dist-packages
+
+
+pip==23.1.2
+accelerate==0.16.0
+datasets==2.13.1
+ftfy==6.1.1
+Jinja2==3.0.3
+tensorboard==2.11.2
+torchvision==0.13.1
+transformers==4.30.2
+
+
 for training, need to install `diffusers` from local:
 https://huggingface.co/docs/diffusers/installation#install-from-source
+
 """
 
 import time
